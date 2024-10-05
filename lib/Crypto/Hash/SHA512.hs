@@ -483,3 +483,37 @@ hash_lazy bl = cat (go iv (pad_lazy bl)) where
     | otherwise = case splitAt128 bs of
         SLPair c r -> go (unsafe_hash_alg acc c) r
 
+-- HMAC -----------------------------------------------------------------------
+-- https://datatracker.ietf.org/doc/html/rfc2104#section-2
+
+-- | Produce a message authentication code for a strict bytestring,
+--   based on the provided (strict, bytestring) key, via SHA-512.
+--
+--   The 512-bit MAC is returned as a strict bytestring.
+--
+--   >>> hmac "strict bytestring key" "strict bytestring input"
+--   "<strict 512-bit MAC>"
+hmac :: BS.ByteString -> BS.ByteString -> BS.ByteString
+hmac k = hmac_lazy k . BL.fromStrict
+
+-- | Produce a message authentication code for a lazy bytestring, based
+--   on the provided (strict, bytestring) key, via SHA-512.
+--
+--   The 512-bit MAC is returned as a strict bytestring.
+--
+--   >>> hmac_lazy "strict bytestring key" "lazy bytestring input"
+--   "<strict 512-bit MAC>"
+hmac_lazy :: BS.ByteString -> BL.ByteString -> BS.ByteString
+hmac_lazy k text
+    | lk > 128 = error "ppad-sha512: hmac key exceeds 128 bytes"
+    | otherwise =
+        let step1 = k <> BS.replicate (128 - lk) 0x00
+            step2 = BS.map (B.xor 0x36) step1
+            step3 = BL.fromStrict step2 <> text
+            step4 = hash_lazy step3
+            step5 = BS.map (B.xor 0x5C) step1
+            step6 = step5 <> step4
+        in  hash step6
+  where
+    lk = fi (BS.length k)
+
