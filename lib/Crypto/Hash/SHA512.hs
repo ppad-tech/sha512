@@ -14,7 +14,16 @@
 -- [6234](https://datatracker.ietf.org/doc/html/rfc6234) and
 -- [2104](https://datatracker.ietf.org/doc/html/rfc2104).
 
-module Crypto.Hash.SHA512 where
+module Crypto.Hash.SHA512 (
+  -- * SHA-512 message digest functions
+    hash
+  , hash_lazy
+
+  -- * SHA512-based MAC functions
+  , hmac
+  , hmac_lazy
+  ) where
+
 
 import qualified Data.Bits as B
 import Data.Bits ((.|.), (.&.))
