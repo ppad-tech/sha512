@@ -156,19 +156,19 @@ maj x y z = (x .&. (y .|. z)) .|. (y .&. z)
 {-# INLINE maj #-}
 
 bsig0 :: Word64 -> Word64
-bsig0 x = B.rotateR x 2 `B.xor` B.rotateR x 13 `B.xor` B.rotateR x 22
+bsig0 x = B.rotateR x 28 `B.xor` B.rotateR x 34 `B.xor` B.rotateR x 39
 {-# INLINE bsig0 #-}
 
 bsig1 :: Word64 -> Word64
-bsig1 x = B.rotateR x 6 `B.xor` B.rotateR x 11 `B.xor` B.rotateR x 25
+bsig1 x = B.rotateR x 14 `B.xor` B.rotateR x 18 `B.xor` B.rotateR x 41
 {-# INLINE bsig1 #-}
 
 ssig0 :: Word64 -> Word64
-ssig0 x = B.rotateR x 7 `B.xor` B.rotateR x 18 `B.xor` B.unsafeShiftR x 3
+ssig0 x = B.rotateR x 1 `B.xor` B.rotateR x 8 `B.xor` B.unsafeShiftR x 7
 {-# INLINE ssig0 #-}
 
 ssig1 :: Word64 -> Word64
-ssig1 x = B.rotateR x 17 `B.xor` B.rotateR x 19 `B.xor` B.unsafeShiftR x 10
+ssig1 x = B.rotateR x 19 `B.xor` B.rotateR x 61 `B.xor` B.unsafeShiftR x 6
 {-# INLINE ssig1 #-}
 
 data Schedule = Schedule {
