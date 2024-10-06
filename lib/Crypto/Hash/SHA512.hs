@@ -505,7 +505,10 @@ hash_lazy bl = cat (go iv (pad_lazy bl)) where
 --
 --   >>> hmac "strict bytestring key" "strict bytestring input"
 --   "<strict 512-bit MAC>"
-hmac :: BS.ByteString -> BS.ByteString -> BS.ByteString
+hmac
+  :: BS.ByteString -- ^ key
+  -> BS.ByteString -- ^ text
+  -> BS.ByteString
 hmac k = hmac_lazy k . BL.fromStrict
 
 data KeyAndLen = KeyAndLen
@@ -522,7 +525,10 @@ data KeyAndLen = KeyAndLen
 --
 --   >>> hmac_lazy "strict bytestring key" "lazy bytestring input"
 --   "<strict 512-bit MAC>"
-hmac_lazy :: BS.ByteString -> BL.ByteString -> BS.ByteString
+hmac_lazy
+  :: BS.ByteString -- ^ key
+  -> BL.ByteString -- ^ text
+  -> BS.ByteString
 hmac_lazy mk text =
     let step1 = k <> BS.replicate (128 - lk) 0x00
         step2 = BS.map (B.xor 0x36) step1
