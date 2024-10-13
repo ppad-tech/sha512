@@ -24,7 +24,6 @@ module Crypto.Hash.SHA512 (
   , hmac_lazy
   ) where
 
-
 import qualified Data.Bits as B
 import Data.Bits ((.|.), (.&.))
 import qualified Data.ByteString as BS
