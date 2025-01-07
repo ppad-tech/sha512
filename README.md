@@ -59,32 +59,32 @@ Current benchmark figures on my mid-2020 MacBook Air look like (use
 
 ```
   benchmarking ppad-sha512/SHA512 (32B input)/hash
-  time                 2.386 μs   (2.320 μs .. 2.445 μs)
-                       0.995 R²   (0.993 R² .. 0.997 R²)
-  mean                 2.370 μs   (2.319 μs .. 2.432 μs)
-  std dev              193.0 ns   (160.0 ns .. 232.3 ns)
-  variance introduced by outliers: 83% (severely inflated)
+  time                 1.820 μs   (1.798 μs .. 1.841 μs)
+                       0.999 R²   (0.998 R² .. 0.999 R²)
+  mean                 1.821 μs   (1.803 μs .. 1.846 μs)
+  std dev              73.84 ns   (55.50 ns .. 103.6 ns)
+  variance introduced by outliers: 55% (severely inflated)
 
   benchmarking ppad-sha512/SHA512 (32B input)/hash_lazy
-  time                 2.279 μs   (2.214 μs .. 2.349 μs)
-                       0.994 R²   (0.992 R² .. 0.997 R²)
-  mean                 2.292 μs   (2.238 μs .. 2.359 μs)
-  std dev              196.1 ns   (165.2 ns .. 237.1 ns)
-  variance introduced by outliers: 84% (severely inflated)
+  time                 1.760 μs   (1.737 μs .. 1.783 μs)
+                       0.999 R²   (0.998 R² .. 0.999 R²)
+  mean                 1.738 μs   (1.725 μs .. 1.757 μs)
+  std dev              52.44 ns   (42.70 ns .. 74.57 ns)
+  variance introduced by outliers: 40% (moderately inflated)
 
   benchmarking ppad-sha512/HMAC-SHA512 (32B input)/hmac
-  time                 7.511 μs   (7.312 μs .. 7.726 μs)
-                       0.995 R²   (0.993 R² .. 0.997 R²)
-  mean                 7.494 μs   (7.341 μs .. 7.676 μs)
-  std dev              579.6 ns   (477.5 ns .. 736.9 ns)
-  variance introduced by outliers: 80% (severely inflated)
+  time                 5.864 μs   (5.693 μs .. 6.024 μs)
+                       0.997 R²   (0.995 R² .. 0.999 R²)
+  mean                 5.779 μs   (5.719 μs .. 5.864 μs)
+  std dev              241.8 ns   (184.5 ns .. 331.8 ns)
+  variance introduced by outliers: 53% (severely inflated)
 
   benchmarking ppad-sha512/HMAC-SHA512 (32B input)/hmac_lazy
-  time                 7.563 μs   (7.278 μs .. 7.867 μs)
-                       0.993 R²   (0.989 R² .. 0.997 R²)
-  mean                 7.374 μs   (7.226 μs .. 7.566 μs)
-  std dev              551.8 ns   (464.4 ns .. 690.1 ns)
-  variance introduced by outliers: 78% (severely inflated)
+  time                 5.734 μs   (5.684 μs .. 5.791 μs)
+                       0.999 R²   (0.999 R² .. 1.000 R²)
+  mean                 5.741 μs   (5.688 μs .. 5.802 μs)
+  std dev              189.8 ns   (153.6 ns .. 271.8 ns)
+  variance introduced by outliers: 41% (moderately inflated)
 ```
 
 Compare this to Hackage's famous SHA package:
