@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               ppad-sha512
-version:            0.1.2
+version:            0.1.3
 synopsis:           The SHA-512 and HMAC-SHA512 algorithms
 license:            MIT
 license-file:       LICENSE
