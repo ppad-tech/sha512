@@ -103,6 +103,15 @@ unsafe_parseWsPair (BI.BS x l) =
   WSPair (unsafe_word64be (BI.BS x 8)) (BI.BS (plusForeignPtr x 8) (l - 8))
 {-# INLINE unsafe_parseWsPair #-}
 
+-- builder realization strategies
+
+to_strict :: BSB.Builder -> BS.ByteString
+to_strict = BL.toStrict . BSB.toLazyByteString
+
+to_strict_small :: BSB.Builder -> BS.ByteString
+to_strict_small = BL.toStrict . BE.toLazyByteStringWith
+  (BE.safeStrategy 128 BE.smallChunkSize) mempty
+
 -- message padding and parsing ------------------------------------------------
 -- https://datatracker.ietf.org/doc/html/rfc6234#section-4.1
 
@@ -116,9 +125,9 @@ sol l =
 
 -- RFC 6234 4.1 (strict)
 pad :: BS.ByteString -> BS.ByteString
-pad m@(BI.PS _ _ (fi -> l)) =
-    BL.toStrict . BE.toLazyByteStringWith
-      (BE.safeStrategy 128 BE.smallChunkSize) mempty $ padded
+pad m@(BI.PS _ _ (fi -> l))
+    | l < 128   = to_strict_small padded
+    | otherwise = to_strict padded
   where
     padded = BSB.byteString m
           <> fill (sol l) (BSB.word8 0x80)
@@ -203,10 +212,7 @@ pad_lazy (BL.toChunks -> m) = BL.fromChunks (walk 0 m) where
   padding l k bs
     | k == 0 =
           pure
-        . BL.toStrict
-          -- more efficient for small builder
-        . BE.toLazyByteStringWith
-            (BE.safeStrategy 128 BE.smallChunkSize) mempty
+        . to_strict
         $ bs <> BSB.word64BE 0x00 <> BSB.word64BE (l * 8)
     | otherwise =
         let nacc = bs <> BSB.word8 0x00
@@ -500,14 +506,9 @@ unsafe_hash_alg rs bs = block_hash rs (prepare_schedule (unsafe_parse bs))
 
 -- register concatenation
 cat :: Registers -> BS.ByteString
-cat Registers {..} =
-    BL.toStrict
-    -- more efficient for small builder
-  . BE.toLazyByteStringWith (BE.safeStrategy 128 BE.smallChunkSize) mempty
-  $ mconcat [
-        BSB.word64BE h0, BSB.word64BE h1, BSB.word64BE h2, BSB.word64BE h3
-      , BSB.word64BE h4, BSB.word64BE h5, BSB.word64BE h6, BSB.word64BE h7
-      ]
+cat Registers {..} = to_strict_small $
+     BSB.word64BE h0 <> BSB.word64BE h1 <> BSB.word64BE h2 <> BSB.word64BE h3
+  <> BSB.word64BE h4 <> BSB.word64BE h5 <> BSB.word64BE h6 <> BSB.word64BE h7
 
 -- | Compute a condensed representation of a strict bytestring via
 --   SHA-512.
