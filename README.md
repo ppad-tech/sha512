@@ -1,4 +1,4 @@
-# ppad-sha512
+# sha512
 
 [![](https://img.shields.io/hackage/v/ppad-sha512?color=blue)](https://hackage.haskell.org/package/ppad-sha512)
 ![](https://img.shields.io/badge/license-MIT-brightgreen)
