@@ -58,49 +58,37 @@ Haddocks (API documentation, etc.) are hosted at
 The aim is best-in-class performance for pure, highly-auditable Haskell
 code.
 
-Current benchmark figures on my mid-2020 MacBook Air look like (use
+Current benchmark figures on an M4 Silicon MacBook Air look like (use
 `cabal bench` to run the benchmark suite):
 
 ```
   benchmarking ppad-sha512/SHA512 (32B input)/hash
-  time                 1.116 μs   (1.103 μs .. 1.130 μs)
-                       0.999 R²   (0.999 R² .. 0.999 R²)
-  mean                 1.142 μs   (1.132 μs .. 1.154 μs)
-  std dev              37.35 ns   (30.15 ns .. 49.36 ns)
-  variance introduced by outliers: 45% (moderately inflated)
+  time                 957.1 ns   (956.3 ns .. 957.7 ns)
+                       1.000 R²   (1.000 R² .. 1.000 R²)
+  mean                 956.1 ns   (955.6 ns .. 956.6 ns)
+  std dev              1.714 ns   (1.436 ns .. 2.174 ns)
 
   benchmarking ppad-sha512/HMAC-SHA512 (32B input)/hmac
-  time                 4.943 μs   (4.823 μs .. 5.086 μs)
-                       0.997 R²   (0.994 R² .. 1.000 R²)
-  mean                 4.878 μs   (4.838 μs .. 4.946 μs)
-  std dev              180.9 ns   (105.1 ns .. 337.4 ns)
-  variance introduced by outliers: 48% (moderately inflated)
+  time                 3.460 μs   (3.448 μs .. 3.475 μs)
+                       1.000 R²   (1.000 R² .. 1.000 R²)
+  mean                 3.474 μs   (3.468 μs .. 3.478 μs)
+  std dev              16.60 ns   (11.71 ns .. 24.66 ns)
 ```
 
-Compare this to Hackage's famous SHA package:
+Compare this to Hackage's venerable SHA package:
 
 ```
   benchmarking ppad-sha512/SHA512 (32B input)/SHA.sha512
-  time                 2.371 μs   (2.350 μs .. 2.401 μs)
-                       0.999 R²   (0.999 R² .. 1.000 R²)
-  mean                 2.422 μs   (2.403 μs .. 2.443 μs)
-  std dev              69.84 ns   (51.04 ns .. 114.0 ns)
-  variance introduced by outliers: 37% (moderately inflated)
+  time                 1.437 μs   (1.436 μs .. 1.437 μs)
+                       1.000 R²   (1.000 R² .. 1.000 R²)
+  mean                 1.440 μs   (1.435 μs .. 1.452 μs)
+  std dev              23.57 ns   (11.13 ns .. 43.08 ns)
 
   benchmarking ppad-sha512/HMAC-SHA512 (32B input)/SHA.hmacSha512
-  time                 8.832 μs   (8.714 μs .. 8.976 μs)
-                       0.999 R²   (0.998 R² .. 1.000 R²)
-  mean                 8.911 μs   (8.834 μs .. 9.006 μs)
-  std dev              278.9 ns   (215.8 ns .. 365.1 ns)
-  variance introduced by outliers: 37% (moderately inflated)
-```
-
-Or the relevant SHA-512-based functions from a library with similar
-aims, [noble-hashes][noble] (though with no HMAC-SHA512 benchmark
-available):
-
-```
-SHA512 32B x 217,296 ops/sec @ 4μs/op ± 2.00% (min: 3μs, max: 20ms)
+  time                 5.164 μs   (5.162 μs .. 5.166 μs)
+                       1.000 R²   (1.000 R² .. 1.000 R²)
+  mean                 5.159 μs   (5.157 μs .. 5.161 μs)
+  std dev              6.522 ns   (5.534 ns .. 7.662 ns)
 ```
 
 ## Security

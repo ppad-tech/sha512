@@ -36,11 +36,16 @@ execute_group W.MacTestGroup {..} =
   where
     msg = "keysize " <> show mtg_keySize <> ", tagsize " <> show mtg_tagSize
 
+decodeLenient :: BS.ByteString -> BS.ByteString
+decodeLenient bs = case B16.decode bs of
+  Nothing -> error "bang"
+  Just b -> b
+
 execute :: Int -> W.MacTest -> TestTree
 execute tag_size W.MacTest {..} = testCase t_msg $ do
-    let key = B16.decodeLenient (TE.encodeUtf8 mt_key)
-        msg = B16.decodeLenient (TE.encodeUtf8 mt_msg)
-        pec = B16.decodeLenient (TE.encodeUtf8 mt_tag)
+    let key = decodeLenient (TE.encodeUtf8 mt_key)
+        msg = decodeLenient (TE.encodeUtf8 mt_msg)
+        pec = decodeLenient (TE.encodeUtf8 mt_tag)
         out = BS.take bytes (SHA512.hmac key msg)
     if   mt_result == "invalid"
     then assertBool "invalid" (pec /= out)
@@ -149,7 +154,7 @@ hv5_pec = "b47c933421ea2db149ad6e10fce6c7f93d0752380180ffd7f4629a712134831d77be6
 -- https://datatracker.ietf.org/doc/html/rfc4231#section-4.1
 
 hmv1_key :: BS.ByteString
-hmv1_key = B16.decodeLenient "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"
+hmv1_key = decodeLenient "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"
 
 hmv1_put :: BS.ByteString
 hmv1_put = "Hi There"
@@ -167,25 +172,25 @@ hmv2_pec :: BS.ByteString
 hmv2_pec = "164b7a7bfcf819e2e395fbe73b56e0a387bd64222e831fd610270cd7ea2505549758bf75c05a994a6d034f65f8f0e6fdcaeab1a34d4a6b4b636e070a38bce737"
 
 hmv3_key :: BS.ByteString
-hmv3_key = B16.decodeLenient "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+hmv3_key = decodeLenient "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 hmv3_put :: BS.ByteString
-hmv3_put = B16.decodeLenient "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+hmv3_put = decodeLenient "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
 
 hmv3_pec :: BS.ByteString
 hmv3_pec = "fa73b0089d56a284efb0f0756c890be9b1b5dbdd8ee81a3655f83e33b2279d39bf3e848279a722c806b485a47e67c807b946a337bee8942674278859e13292fb"
 
 hmv4_key :: BS.ByteString
-hmv4_key = B16.decodeLenient "0102030405060708090a0b0c0d0e0f10111213141516171819"
+hmv4_key = decodeLenient "0102030405060708090a0b0c0d0e0f10111213141516171819"
 
 hmv4_put :: BS.ByteString
-hmv4_put = B16.decodeLenient "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+hmv4_put = decodeLenient "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
 
 hmv4_pec :: BS.ByteString
 hmv4_pec = "b0ba465637458c6990e5a8c5f61d4af7e576d97ff94b872de76f8050361ee3dba91ca5c11aa25eb4d679275cc5788063a5f19741120c4f2de2adebeb10a298dd"
 
 hmv5_key :: BS.ByteString
-hmv5_key = B16.decodeLenient "0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"
+hmv5_key = decodeLenient "0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"
 
 hmv5_put :: BS.ByteString
 hmv5_put = "Test With Truncation"
@@ -194,7 +199,7 @@ hmv5_pec :: BS.ByteString
 hmv5_pec = "415fad6271580a531d4179bc891d87a6"
 
 hmv6_key :: BS.ByteString
-hmv6_key = B16.decodeLenient "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+hmv6_key = decodeLenient "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 hmv6_put :: BS.ByteString
 hmv6_put = "Test Using Larger Than Block-Size Key - Hash Key First"

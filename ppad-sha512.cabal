@@ -43,8 +43,8 @@ test-suite sha512-tests
   build-depends:
       aeson
     , base
-    , base16-bytestring
     , bytestring
+    , ppad-base16
     , ppad-sha512
     , tasty
     , tasty-hunit
