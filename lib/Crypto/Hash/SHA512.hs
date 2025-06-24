@@ -121,8 +121,6 @@ sol l =
   let r = 112 - fi l `rem` 128 - 1 :: Integer -- fi prevents underflow
   in  fi (if r < 0 then r + 128 else r)
 
--- XX doesn't properly handle (> maxBound :: Word64) length
-
 -- RFC 6234 4.1 (strict)
 pad :: BS.ByteString -> BS.ByteString
 pad m@(BI.PS _ _ (fi -> l))
