@@ -63,33 +63,19 @@ Current benchmark figures on an M4 Silicon MacBook Air look like (use
 
 ```
   benchmarking ppad-sha512/SHA512 (32B input)/hash
-  time                 957.1 ns   (956.3 ns .. 957.7 ns)
+  time                 419.3 ns   (419.1 ns .. 419.7 ns)
                        1.000 R²   (1.000 R² .. 1.000 R²)
-  mean                 956.1 ns   (955.6 ns .. 956.6 ns)
-  std dev              1.714 ns   (1.436 ns .. 2.174 ns)
+  mean                 420.4 ns   (420.1 ns .. 421.1 ns)
+  std dev              1.507 ns   (843.5 ps .. 2.705 ns)
 
   benchmarking ppad-sha512/HMAC-SHA512 (32B input)/hmac
-  time                 3.460 μs   (3.448 μs .. 3.475 μs)
+  time                 1.340 μs   (1.339 μs .. 1.341 μs)
                        1.000 R²   (1.000 R² .. 1.000 R²)
-  mean                 3.474 μs   (3.468 μs .. 3.478 μs)
-  std dev              16.60 ns   (11.71 ns .. 24.66 ns)
+  mean                 1.343 μs   (1.342 μs .. 1.347 μs)
+  std dev              8.443 ns   (3.955 ns .. 14.85 ns)
 ```
 
-Compare this to Hackage's venerable SHA package:
-
-```
-  benchmarking ppad-sha512/SHA512 (32B input)/SHA.sha512
-  time                 1.437 μs   (1.436 μs .. 1.437 μs)
-                       1.000 R²   (1.000 R² .. 1.000 R²)
-  mean                 1.440 μs   (1.435 μs .. 1.452 μs)
-  std dev              23.57 ns   (11.13 ns .. 43.08 ns)
-
-  benchmarking ppad-sha512/HMAC-SHA512 (32B input)/SHA.hmacSha512
-  time                 5.164 μs   (5.162 μs .. 5.166 μs)
-                       1.000 R²   (1.000 R² .. 1.000 R²)
-  mean                 5.159 μs   (5.157 μs .. 5.161 μs)
-  std dev              6.522 ns   (5.534 ns .. 7.662 ns)
-```
+You should compile with the 'llvm' flag for maximum performance.
 
 ## Security
 
