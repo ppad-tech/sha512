@@ -63,16 +63,16 @@ Current benchmark figures on an M4 Silicon MacBook Air look like (use
 
 ```
   benchmarking ppad-sha512/SHA512 (32B input)/hash
-  time                 419.3 ns   (419.1 ns .. 419.7 ns)
+  time                 237.8 ns   (237.4 ns .. 238.2 ns)
                        1.000 R²   (1.000 R² .. 1.000 R²)
-  mean                 420.4 ns   (420.1 ns .. 421.1 ns)
-  std dev              1.507 ns   (843.5 ps .. 2.705 ns)
+  mean                 237.3 ns   (237.1 ns .. 237.8 ns)
+  std dev              1.226 ns   (854.2 ps .. 1.982 ns)
 
   benchmarking ppad-sha512/HMAC-SHA512 (32B input)/hmac
-  time                 1.340 μs   (1.339 μs .. 1.341 μs)
+  time                 1.017 μs   (1.013 μs .. 1.021 μs)
                        1.000 R²   (1.000 R² .. 1.000 R²)
-  mean                 1.343 μs   (1.342 μs .. 1.347 μs)
-  std dev              8.443 ns   (3.955 ns .. 14.85 ns)
+  mean                 1.015 μs   (1.014 μs .. 1.018 μs)
+  std dev              7.727 ns   (6.045 ns .. 9.684 ns)
 ```
 
 You should compile with the 'llvm' flag for maximum performance.
