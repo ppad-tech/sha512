@@ -32,9 +32,16 @@ library
     ghc-options: -fllvm -O2
   exposed-modules:
       Crypto.Hash.SHA512
+      Crypto.Hash.SHA512.Arm
+      Crypto.Hash.SHA512.Internal
+      Crypto.Hash.SHA512.Lazy
   build-depends:
       base >= 4.9 && < 5
     , bytestring >= 0.9 && < 0.13
+  c-sources:
+      cbits/sha512_arm.c
+  if arch(aarch64)
+    cc-options: -march=armv8.2-a+sha3
 
 test-suite sha512-tests
   type:                exitcode-stdio-1.0
