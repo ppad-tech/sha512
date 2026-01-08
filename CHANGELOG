@@ -1,5 +1,16 @@
 # Changelog
 
+- 0.1.5 (2026-01-08)
+  * We now check if the ARM cryptographic extensions are available, and,
+    if so, use them to calculate hashes. If they're unavailable we
+    simply use the pure implementation as a fallback. This yields about
+    a 5x performance boost for 'hash' and 3.5x boost for 'hmac' (again,
+    when available).
+
+  * Allocation for both the 'hash' and 'hmac' functions has been reduced
+    dramatically, mostly by optimising the padding internals, and is now
+    constant with respect to input.
+
 - 0.1.4 (2025-12-28)
   * Adds an 'llvm' build flag and tests with GHC 9.10.3.
 
