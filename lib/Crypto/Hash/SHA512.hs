@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK prune #-}
 {-# LANGUAGE BangPatterns #-}
 
 -- |
@@ -10,6 +11,10 @@
 -- strict and lazy ByteStrings, as specified by RFC's
 -- [6234](https://datatracker.ietf.org/doc/html/rfc6234) and
 -- [2104](https://datatracker.ietf.org/doc/html/rfc2104).
+--
+-- The 'hash' and 'hmac' functions will use primitive instructions from
+-- the ARM cryptographic extensions via FFI if they're available, and
+-- will otherwise use a pure Haskell implementation.
 
 module Crypto.Hash.SHA512 (
   -- * SHA-512 message digest functions
