@@ -94,6 +94,7 @@ benchmark sha512-weigh
   build-depends:
       base
     , bytestring
+    , deepseq
     , ppad-sha512
     , weigh
 
