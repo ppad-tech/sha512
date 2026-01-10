@@ -22,6 +22,7 @@ module Crypto.Hash.SHA512 (
   , Lazy.hash_lazy
 
   -- * SHA512-based MAC functions
+  , MAC(..)
   , hmac
   , Lazy.hmac_lazy
   ) where
@@ -94,15 +95,15 @@ data KeyAndLen = KeyAndLen
 hmac
   :: BS.ByteString -- ^ key
   -> BS.ByteString -- ^ text
-  -> BS.ByteString
+  -> MAC
 hmac mk@(BI.PS _ _ l) text
     | sha512_arm_available =
         let !inner = hash_arm_with ipad 128 text
-        in  hash_arm (opad <> inner)
+        in  MAC (hash_arm (opad <> inner))
     | otherwise =
         let !ipad_state = block_hash iv (prepare_schedule (parse_block ipad 0))
             !inner = cat (process_with ipad_state 128 text)
-        in  hash (opad <> inner)
+        in  MAC (hash (opad <> inner))
   where
     !step1 = k <> BS.replicate (128 - lk) 0x00
     !ipad  = BS.map (B.xor 0x36) step1

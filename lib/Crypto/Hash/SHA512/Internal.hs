@@ -1,5 +1,7 @@
 {-# OPTIONS_HADDOCK hide #-}
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RecordWildCards #-}
 
 -- |
@@ -14,6 +16,8 @@ module Crypto.Hash.SHA512.Internal (
     Registers(..)
   , Block(..)
   , Schedule(..)
+
+  , MAC(..)
 
   , iv
   , block_hash
@@ -41,6 +45,31 @@ import Foreign.ForeignPtr (plusForeignPtr)
 import Foreign.Marshal.Utils (copyBytes, fillBytes)
 import Foreign.Ptr (Ptr, plusPtr)
 import Foreign.Storable (poke)
+
+-- MAC type ------------------------------------------------------------------
+
+-- | A message authentication code.
+--
+--   Note that you should compare MACs for equality using the 'Eq'
+--   instance, which performs the comparison in constant time, instead
+--   of unwrapping and comparing the underlying 'ByteStrings'.
+--
+--   >>> let foo@(MAC bs0) = hmac key "hi"
+--   >>> let bar@(MAC bs1) = hmac key "there"
+--   >>> foo == bar -- do this
+--   False
+--   >>> bs0 == bs1 -- don't do this
+--   False
+newtype MAC = MAC BS.ByteString
+  deriving newtype Show
+
+instance Eq MAC where
+  -- | A constant-time equality check for message authentication codes.
+  --
+  --   Runs in variable-time only for invalid inputs.
+  (MAC a@(BI.PS _ _ la)) == (MAC b@(BI.PS _ _ lb))
+    | la /= lb  = False
+    | otherwise = BS.foldl' (B..|.) 0 (BS.packZipWith B.xor a b) == 0
 
 -- preliminary utils ---------------------------------------------------------
 

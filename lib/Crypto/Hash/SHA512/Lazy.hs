@@ -21,6 +21,7 @@ module Crypto.Hash.SHA512.Lazy (
   , hmac_lazy
   ) where
 
+import Crypto.Hash.SHA512.Internal
 import qualified Data.Bits as B
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
@@ -30,7 +31,6 @@ import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Lazy.Internal as BLI
 import Data.Word (Word64)
 import Foreign.ForeignPtr (plusForeignPtr)
-import Crypto.Hash.SHA512.Internal
 
 -- preliminary utils
 
@@ -136,7 +136,7 @@ data KeyAndLen = KeyAndLen
 hmac_lazy
   :: BS.ByteString -- ^ key
   -> BL.ByteString -- ^ text
-  -> BS.ByteString
+  -> MAC
 hmac_lazy mk@(BI.PS _ _ l) text =
     let step1 = k <> BS.replicate (128 - lk) 0x00
         step2 = BS.map (B.xor 0x36) step1
@@ -144,7 +144,7 @@ hmac_lazy mk@(BI.PS _ _ l) text =
         step4 = hash_lazy step3
         step5 = BS.map (B.xor 0x5C) step1
         step6 = step5 <> step4
-    in  hash step6
+    in  MAC (hash step6)
   where
     hash bs = cat (go iv (pad bs)) where
       go :: Registers -> BS.ByteString -> Registers
