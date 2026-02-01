@@ -32,9 +32,6 @@ import qualified Data.ByteString.Lazy.Internal as BLI
 import Data.Word (Word64)
 import Foreign.ForeignPtr (plusForeignPtr)
 
--- preliminary utils
-
--- keystroke saver
 fi :: (Integral a, Num b) => a -> b
 fi = fromIntegral
 {-# INLINE fi #-}
@@ -109,19 +106,15 @@ pad_lazy (BL.toChunks -> m) = BL.fromChunks (walk 0 m) where
 --   >>> hash_lazy "lazy bytestring input"
 --   "<strict 512-bit message digest>"
 hash_lazy :: BL.ByteString -> BS.ByteString
-hash_lazy bl = cat (go iv (pad_lazy bl)) where
+hash_lazy bl = cat (go (iv ()) (pad_lazy bl)) where
   go :: Registers -> BL.ByteString -> Registers
   go !acc bs
     | BL.null bs = acc
     | otherwise = case splitAt128 bs of
-        SLPair c r -> go (unsafe_hash_alg acc c) r
+        SLPair c r -> go (update acc (parse c 0)) r
 
 -- HMAC -----------------------------------------------------------------------
 -- https://datatracker.ietf.org/doc/html/rfc2104#section-2
-
-data KeyAndLen = KeyAndLen
-  {-# UNPACK #-} !BS.ByteString
-  {-# UNPACK #-} !Int
 
 -- | Produce a message authentication code for a lazy bytestring, based
 --   on the provided (strict, bytestring) key, via SHA-512.
@@ -146,12 +139,12 @@ hmac_lazy mk@(BI.PS _ _ l) text =
         step6 = step5 <> step4
     in  MAC (hash step6)
   where
-    hash bs = cat (go iv (pad bs)) where
+    hash bs = cat (go (iv ()) (pad bs)) where
       go :: Registers -> BS.ByteString -> Registers
       go !acc b
         | BS.null b = acc
         | otherwise = case unsafe_splitAt 128 b of
-            SSPair c r -> go (unsafe_hash_alg acc c) r
+            SSPair c r -> go (update acc (parse c 0)) r
 
       pad m@(BI.PS _ _ (fi -> len))
           | len < 256 = to_strict_small padded
@@ -177,6 +170,4 @@ hmac_lazy mk@(BI.PS _ _ l) text =
             | j == 0 = acc
             | otherwise = loop8 (pred j) (acc <> BSB.word8 0x00)
 
-    !(KeyAndLen k lk)
-      | l > 128   = KeyAndLen (hash mk) 64
-      | otherwise = KeyAndLen mk l
+    !(k, lk) = if l > 128 then (hash mk, 64) else (mk, l)

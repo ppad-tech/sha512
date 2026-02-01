@@ -52,11 +52,11 @@ static const uint64_t K[80] = {
  * Process one 128-byte block using ARM SHA512 crypto instructions.
  *
  * state: pointer to 8 uint64_t words (a,b,c,d,e,f,g,h)
- * block: pointer to 128 bytes of message data
+ * block: pointer to 16 uint64_t words (already native endian)
  *
  * The state is updated in place.
  */
-void sha512_block_arm(uint64_t *state, const uint8_t *block) {
+void sha512_block_arm(uint64_t *state, const uint64_t *block) {
     /* Load current hash state */
     uint64x2_t ab = vld1q_u64(&state[0]);
     uint64x2_t cd = vld1q_u64(&state[2]);
@@ -69,15 +69,15 @@ void sha512_block_arm(uint64_t *state, const uint8_t *block) {
     uint64x2_t ef_orig = ef;
     uint64x2_t gh_orig = gh;
 
-    /* Load message and convert from big-endian */
-    uint64x2_t m0 = vreinterpretq_u64_u8(vrev64q_u8(vld1q_u8(&block[0])));
-    uint64x2_t m1 = vreinterpretq_u64_u8(vrev64q_u8(vld1q_u8(&block[16])));
-    uint64x2_t m2 = vreinterpretq_u64_u8(vrev64q_u8(vld1q_u8(&block[32])));
-    uint64x2_t m3 = vreinterpretq_u64_u8(vrev64q_u8(vld1q_u8(&block[48])));
-    uint64x2_t m4 = vreinterpretq_u64_u8(vrev64q_u8(vld1q_u8(&block[64])));
-    uint64x2_t m5 = vreinterpretq_u64_u8(vrev64q_u8(vld1q_u8(&block[80])));
-    uint64x2_t m6 = vreinterpretq_u64_u8(vrev64q_u8(vld1q_u8(&block[96])));
-    uint64x2_t m7 = vreinterpretq_u64_u8(vrev64q_u8(vld1q_u8(&block[112])));
+    /* Load message (already native endian) */
+    uint64x2_t m0 = vld1q_u64(&block[0]);
+    uint64x2_t m1 = vld1q_u64(&block[2]);
+    uint64x2_t m2 = vld1q_u64(&block[4]);
+    uint64x2_t m3 = vld1q_u64(&block[6]);
+    uint64x2_t m4 = vld1q_u64(&block[8]);
+    uint64x2_t m5 = vld1q_u64(&block[10]);
+    uint64x2_t m6 = vld1q_u64(&block[12]);
+    uint64x2_t m7 = vld1q_u64(&block[14]);
 
     uint64x2_t tmp;
 
@@ -454,7 +454,7 @@ int sha512_arm_available(void) {
 #else
 
 /* Stub implementations when ARM SHA512 is not available */
-void sha512_block_arm(uint64_t *state, const uint8_t *block) {
+void sha512_block_arm(uint64_t *state, const uint64_t *block) {
     (void)state;
     (void)block;
     /* Should never be called - use pure Haskell fallback */

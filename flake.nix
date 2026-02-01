@@ -61,8 +61,6 @@
               llvm
             ];
 
-            inputsFrom = builtins.attrValues self.packages.${system};
-
             doBenchmark = true;
 
             shellHook = ''
