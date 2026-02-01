@@ -63,17 +63,17 @@ benchmark suite):
 
 ```
   benchmarking ppad-sha512/SHA512 (32B input)/hash
-  time                 111.1 ns   (110.2 ns .. 111.6 ns)
-                       1.000 R²   (0.999 R² .. 1.000 R²)
-  mean                 108.6 ns   (107.8 ns .. 109.5 ns)
-  std dev              2.951 ns   (2.637 ns .. 3.334 ns)
-  variance introduced by outliers: 41% (moderately inflated)
+  time                 129.7 ns   (129.1 ns .. 130.3 ns)
+                       1.000 R²   (1.000 R² .. 1.000 R²)
+  mean                 130.1 ns   (129.9 ns .. 130.3 ns)
+  std dev              668.1 ps   (432.4 ps .. 974.3 ps)
 
   benchmarking ppad-sha512/HMAC-SHA512 (32B input)/hmac
-  time                 469.1 ns   (468.2 ns .. 470.0 ns)
-                       1.000 R²   (1.000 R² .. 1.000 R²)
-  mean                 468.6 ns   (467.7 ns .. 469.3 ns)
-  std dev              2.809 ns   (2.317 ns .. 3.492 ns)
+  time                 359.6 ns   (356.2 ns .. 365.1 ns)
+                       0.998 R²   (0.994 R² .. 1.000 R²)
+  mean                 360.3 ns   (356.3 ns .. 371.5 ns)
+  std dev              18.82 ns   (2.196 ns .. 34.70 ns)
+  variance introduced by outliers: 70% (severely inflated)
 ```
 
 You should compile with the 'llvm' flag for maximum performance.
