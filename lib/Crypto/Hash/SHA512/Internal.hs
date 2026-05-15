@@ -812,22 +812,14 @@ parse_vsb (R v0 v1 v2 v3 v4 v5 v6 v7) (GHC.Word.W8# sep) dat =
       !(GHC.Word.W8# b4) = BU.unsafeIndex dat 4
       !(GHC.Word.W8# b5) = BU.unsafeIndex dat 5
       !(GHC.Word.W8# b6) = BU.unsafeIndex dat 6
-      !w08 =
-            Exts.uncheckedShiftL# (Exts.word8ToWord# sep) 56#
-            `Exts.or#`
-            Exts.uncheckedShiftL# (Exts.word8ToWord# b0) 48#
-            `Exts.or#`
-            Exts.uncheckedShiftL# (Exts.word8ToWord# b1) 40#
-            `Exts.or#`
-            Exts.uncheckedShiftL# (Exts.word8ToWord# b2) 32#
-            `Exts.or#`
-            Exts.uncheckedShiftL# (Exts.word8ToWord# b3) 24#
-            `Exts.or#`
-            Exts.uncheckedShiftL# (Exts.word8ToWord# b4) 16#
-            `Exts.or#`
-            Exts.uncheckedShiftL# (Exts.word8ToWord# b5) 8#
-            `Exts.or#`
-            Exts.word8ToWord# b6
+      !w08 =       Exts.uncheckedShiftL# (Exts.word8ToWord# sep) 56#
+        `Exts.or#` Exts.uncheckedShiftL# (Exts.word8ToWord# b0)  48#
+        `Exts.or#` Exts.uncheckedShiftL# (Exts.word8ToWord# b1)  40#
+        `Exts.or#` Exts.uncheckedShiftL# (Exts.word8ToWord# b2)  32#
+        `Exts.or#` Exts.uncheckedShiftL# (Exts.word8ToWord# b3)  24#
+        `Exts.or#` Exts.uncheckedShiftL# (Exts.word8ToWord# b4)  16#
+        `Exts.or#` Exts.uncheckedShiftL# (Exts.word8ToWord# b5)  08#
+        `Exts.or#` Exts.word8ToWord# b6
   in  B v0 v1 v2 v3 v4 v5 v6 v7
         (Exts.wordToWord64# w08)
         (word64be dat 07) (word64be dat 15) (word64be dat 23)
