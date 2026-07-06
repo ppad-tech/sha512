@@ -83,37 +83,13 @@ instance Eq MAC where
   --
   --   Runs in variable-time only for invalid inputs.
   (MAC a@(BI.PS _ _ la)) == (MAC b@(BI.PS _ _ lb))
-      | la /= lb   = False
-      | la == 64   =
-          -- fully-unrolled, fixed OR-tree over eight 64-bit lanes.
-          -- A standard 64-byte MAC folds through no loop-carried
-          -- accumulator, so there is no per-byte accumulator whose
-          -- nonzero span tracks the position of a differing byte:
-          -- the comparison time is independent of where (or whether)
-          -- the tags differ.
-          let !d0 = Exts.xor64# (word64le a 00) (word64le b 00)
-              !d1 = Exts.xor64# (word64le a 08) (word64le b 08)
-              !d2 = Exts.xor64# (word64le a 16) (word64le b 16)
-              !d3 = Exts.xor64# (word64le a 24) (word64le b 24)
-              !d4 = Exts.xor64# (word64le a 32) (word64le b 32)
-              !d5 = Exts.xor64# (word64le a 40) (word64le b 40)
-              !d6 = Exts.xor64# (word64le a 48) (word64le b 48)
-              !d7 = Exts.xor64# (word64le a 56) (word64le b 56)
-              !dl = (d0 `Exts.or64#` d1) `Exts.or64#`
-                    (d2 `Exts.or64#` d3)
-              !dh = (d4 `Exts.or64#` d5) `Exts.or64#`
-                    (d6 `Exts.or64#` d7)
-              !d  = dl `Exts.or64#` dh
-          in  Exts.isTrue# (Exts.eqWord64# d (Exts.wordToWord64# 0##))
-      | otherwise  = go 0 0
+      | la /= lb  = False
+      | otherwise = go 0 0
     where
-      -- byte-serial fallback for nonstandard MAC lengths. 'hmac'
-      -- always yields 64 bytes, so this path is unreachable through
-      -- it; it exists only to keep the instance total for MACs built
-      -- directly via the exported constructor. The fused fold ORs the
-      -- bytewise XORs into an accumulator directly, rather than via
-      -- packZipWith, so no intermediate ByteString holding the
-      -- (secret-derived) difference bytes is ever materialised.
+      -- fused fold: OR the bytewise XORs into an accumulator
+      -- directly, rather than via packZipWith, so no intermediate
+      -- ByteString holding the (secret-derived) difference bytes
+      -- is ever materialised on the heap.
       go :: Word8 -> Int -> Bool
       go !acc !i
         | i == la   = acc == 0
@@ -216,41 +192,6 @@ word64be bs m =
         (s0 `Exts.or#` s1 `Exts.or#` s2 `Exts.or#` s3 `Exts.or#`
          s4 `Exts.or#` s5 `Exts.or#` s6 `Exts.or#` w7)
 {-# INLINE word64be #-}
-
--- | Assemble the 64-bit word at the given byte offset, little-endian.
---
---   Byte order is immaterial to an equality test as long as both
---   operands are assembled the same way; this is used only by the
---   constant-time 'MAC' comparison. The length is not checked.
-word64le :: BS.ByteString -> Int -> Exts.Word64#
-word64le bs m =
-  let !(GHC.Word.W8# r0) = BU.unsafeIndex bs m
-      !(GHC.Word.W8# r1) = BU.unsafeIndex bs (m + 1)
-      !(GHC.Word.W8# r2) = BU.unsafeIndex bs (m + 2)
-      !(GHC.Word.W8# r3) = BU.unsafeIndex bs (m + 3)
-      !(GHC.Word.W8# r4) = BU.unsafeIndex bs (m + 4)
-      !(GHC.Word.W8# r5) = BU.unsafeIndex bs (m + 5)
-      !(GHC.Word.W8# r6) = BU.unsafeIndex bs (m + 6)
-      !(GHC.Word.W8# r7) = BU.unsafeIndex bs (m + 7)
-      !w0 = Exts.word8ToWord# r0
-      !w1 = Exts.word8ToWord# r1
-      !w2 = Exts.word8ToWord# r2
-      !w3 = Exts.word8ToWord# r3
-      !w4 = Exts.word8ToWord# r4
-      !w5 = Exts.word8ToWord# r5
-      !w6 = Exts.word8ToWord# r6
-      !w7 = Exts.word8ToWord# r7
-      !s1 = Exts.uncheckedShiftL# w1 8#
-      !s2 = Exts.uncheckedShiftL# w2 16#
-      !s3 = Exts.uncheckedShiftL# w3 24#
-      !s4 = Exts.uncheckedShiftL# w4 32#
-      !s5 = Exts.uncheckedShiftL# w5 40#
-      !s6 = Exts.uncheckedShiftL# w6 48#
-      !s7 = Exts.uncheckedShiftL# w7 56#
-  in  Exts.wordToWord64#
-        (w0 `Exts.or#` s1 `Exts.or#` s2 `Exts.or#` s3 `Exts.or#`
-         s4 `Exts.or#` s5 `Exts.or#` s6 `Exts.or#` s7)
-{-# INLINE word64le #-}
 
 -- parsing (final input) ------------------------------------------------------
 
