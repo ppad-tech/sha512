@@ -40,6 +40,7 @@ library
       Crypto.Hash.SHA512.Arm
       Crypto.Hash.SHA512.Internal
       Crypto.Hash.SHA512.Lazy
+      Crypto.Hash.SHA512.Pure
   other-modules:
       Data.Barrier
   build-depends:
