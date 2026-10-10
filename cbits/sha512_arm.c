@@ -1,9 +1,18 @@
 #include <stdint.h>
 #include <string.h>
 
-#if defined(__aarch64__) && defined(__ARM_FEATURE_SHA512)
+#if defined(__aarch64__)
 
 #include <arm_neon.h>
+
+#if defined(__APPLE__)
+#include <sys/sysctl.h>
+#elif defined(__linux__)
+#include <sys/auxv.h>
+#ifndef HWCAP_SHA512
+#define HWCAP_SHA512 (1UL << 21)
+#endif
+#endif
 
 static const uint64_t K[80] = {
     0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL,
@@ -55,7 +64,11 @@ static const uint64_t K[80] = {
  * block: pointer to 16 uint64_t words (already native endian)
  *
  * The state is updated in place.
+ *
+ * Compiled for the SHA512 extension only; callers must first check
+ * 'sha512_arm_available'.
  */
+__attribute__((target("+sha3")))
 void sha512_block_arm(uint64_t *state, const uint64_t *block) {
     /* Load current hash state */
     uint64x2_t ab = vld1q_u64(&state[0]);
@@ -446,14 +459,34 @@ void sha512_block_arm(uint64_t *state, const uint64_t *block) {
     vst1q_u64(&state[6], gh);
 }
 
-/* Return 1 if ARM SHA512 is available, 0 otherwise */
+#if defined(__APPLE__)
+static int sysctl_flag(const char *name) {
+    int val = 0;
+    size_t len = sizeof(val);
+    if (sysctlbyname(name, &val, &len, NULL, 0) != 0) return 0;
+    return val != 0;
+}
+#endif
+
+/*
+ * Return 1 if the CPU implements the ARM SHA512 extension, 0
+ * otherwise.  We only know how to ask Darwin and Linux, and report 0
+ * (selecting the pure Haskell fallback) on any other OS.
+ */
 int sha512_arm_available(void) {
-    return 1;
+#if defined(__APPLE__)
+    return sysctl_flag("hw.optional.arm.FEAT_SHA512")
+        || sysctl_flag("hw.optional.armv8_2_sha512");
+#elif defined(__linux__)
+    return (getauxval(AT_HWCAP) & HWCAP_SHA512) != 0;
+#else
+    return 0;
+#endif
 }
 
 #else
 
-/* Stub implementations when ARM SHA512 is not available */
+/* Stub implementations for non-aarch64 builds */
 void sha512_block_arm(uint64_t *state, const uint64_t *block) {
     (void)state;
     (void)block;
