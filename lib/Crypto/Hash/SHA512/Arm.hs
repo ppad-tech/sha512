@@ -24,6 +24,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Internal as BI
 import qualified Data.ByteString.Unsafe as BU
 import Data.Word (Word8, Word64)
+import Foreign.C.Types (CInt(..))
 import Foreign.Marshal.Alloc (allocaBytes)
 import Foreign.Ptr (Ptr)
 import qualified GHC.Exts as Exts
@@ -38,7 +39,7 @@ foreign import ccall unsafe "sha512_block_arm"
   c_sha512_block :: Ptr Word64 -> Ptr Word64 -> IO ()
 
 foreign import ccall unsafe "sha512_arm_available"
-  c_sha512_arm_available :: IO Int
+  c_sha512_arm_available :: IO CInt
 
 -- utilities ------------------------------------------------------------------
 
